@@ -1,1 +1,1 @@
-# Sherlock-and-MiniMax
+# Sherlock-and-MiniMax This C# program finds an integer **M** between `p` and `q` that **maximizes the minimum distance** to any element in the sorted array `arr`. It checks the endpoints (`p`, `q`) and midpoints between array elements to determine which value of `M` provides the largest minimum distance.
