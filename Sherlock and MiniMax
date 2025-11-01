@@ -1,0 +1,103 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
+using System.Text;
+using System;
+
+class Result
+{
+
+    /*
+     * Complete the 'sherlockAndMinimax' function below.
+     *
+     * The function is expected to return an INTEGER.
+     * The function accepts following parameters:
+     *  1. INTEGER_ARRAY arr
+     *  2. INTEGER p
+     *  3. INTEGER q
+     */
+
+    public static int sherlockAndMinimax(List<int> arr, int p, int q)
+    {
+        arr.Sort();
+        int best = p;
+        int maxMinDist = -1;
+
+        // Helper function: minimum distance from x to any element in arr
+        int MinDist(int x)
+        {
+            int idx = arr.BinarySearch(x);
+            if (idx >= 0) return 0; // x is exactly in arr
+            idx = ~idx; // index of first element greater than x
+            int dist = int.MaxValue;
+            if (idx < arr.Count) dist = Math.Min(dist, arr[idx] - x);
+            if (idx > 0) dist = Math.Min(dist, x - arr[idx - 1]);
+            return dist;
+        }
+        
+        foreach (int x in new int[] { p, q })
+        {
+            int dist = MinDist(x);
+            if (dist > maxMinDist || (dist == maxMinDist && x < best))
+            {
+                maxMinDist = dist;
+                best = x;
+            }
+        }
+
+        // Check midpoints between consecutive elements
+        for (int i = 0; i < arr.Count - 1; i++)
+        {
+            int a = arr[i];
+            int b = arr[i + 1];
+            int mid = (a + b) / 2;
+            
+            foreach (int x in new int[] { mid, mid + 1 })
+            {
+                if (x < p || x > q) continue;
+                int dist = MinDist(x);
+                if (dist > maxMinDist || (dist == maxMinDist && x < best))
+                {
+                    maxMinDist = dist;
+                    best = x;
+                }
+            }
+        }
+
+        return best;
+    }
+
+}
+
+class Solution
+{
+    public static void Main(string[] args)
+    {
+        TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
+
+        int n = Convert.ToInt32(Console.ReadLine().Trim());
+
+        List<int> arr = Console.ReadLine().TrimEnd().Split(' ').ToList().Select(arrTemp => Convert.ToInt32(arrTemp)).ToList();
+
+        string[] firstMultipleInput = Console.ReadLine().TrimEnd().Split(' ');
+
+        int p = Convert.ToInt32(firstMultipleInput[0]);
+
+        int q = Convert.ToInt32(firstMultipleInput[1]);
+
+        int result = Result.sherlockAndMinimax(arr, p, q);
+
+        textWriter.WriteLine(result);
+
+        textWriter.Flush();
+        textWriter.Close();
+    }
+}
